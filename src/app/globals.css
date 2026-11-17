@@ -1,0 +1,191 @@
+@import "tailwindcss";
+@import "@fontsource-variable/cairo";
+
+/* ---------- Brand tokens (from the Al-Arz logo) ---------- */
+@theme {
+  --color-orange: #feb258;
+  --color-orange-deep: #f28c1b;
+  --color-orange-soft: #ffe2bd;
+  --color-navy: #194e91;
+  --color-navy-deep: #0d2f5e;
+  --color-navy-ink: #081d3c;
+  --color-cream: #fff8ee;
+  --color-cream-deep: #fdebd3;
+
+  --font-sans: "Cairo Variable", "Cairo", system-ui, sans-serif;
+
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-cream);
+    color: var(--color-navy-ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  ::selection {
+    background: var(--color-orange);
+    color: var(--color-navy-ink);
+  }
+  body {
+    overflow-x: clip;
+  }
+}
+
+@layer components {
+  .container-x {
+    width: 100%;
+    max-width: 82rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .container-x {
+      padding-inline: 2rem;
+    }
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    color: var(--color-orange-deep);
+  }
+  .eyebrow::before {
+    content: "";
+    width: 1.75rem;
+    height: 0.3rem;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: 999px;
+    padding: 0.95rem 1.7rem;
+    font-weight: 800;
+    transition:
+      transform 0.35s var(--ease-bounce),
+      box-shadow 0.35s ease,
+      background 0.3s ease,
+      color 0.3s ease;
+    will-change: transform;
+  }
+  .btn:hover {
+    transform: translateY(-3px) scale(1.03);
+  }
+  .btn:active {
+    transform: translateY(0) scale(0.98);
+  }
+  .btn-primary {
+    background: var(--color-navy);
+    color: white;
+    box-shadow: 0 14px 30px -12px rgb(25 78 145 / 0.65);
+  }
+  .btn-primary:hover {
+    background: var(--color-navy-deep);
+    box-shadow: 0 20px 40px -14px rgb(25 78 145 / 0.8);
+  }
+  .btn-ghost {
+    background: white;
+    color: var(--color-navy);
+    box-shadow: inset 0 0 0 2px rgb(25 78 145 / 0.15);
+  }
+  .btn-ghost:hover {
+    box-shadow: inset 0 0 0 2px var(--color-navy);
+  }
+
+  /* Wavy "melting" text underline */
+  .melt-underline {
+    display: inline-block;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10'%3E%3Cpath d='M0 5 Q5 0 10 5 T20 5 T30 5 T40 5' fill='none' stroke='%23FEB258' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-size: 40px 10px;
+    background-position: 0 100%;
+    padding-bottom: 0.35em;
+  }
+
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes marquee-rtl {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(50%);
+  }
+}
+@keyframes blob {
+  0%,
+  100% {
+    border-radius: 58% 42% 55% 45% / 47% 52% 48% 53%;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    border-radius: 42% 58% 40% 60% / 60% 38% 62% 40%;
+    transform: translate(2%, -3%) rotate(12deg);
+  }
+}
+@keyframes drip {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.18);
+  }
+}
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
