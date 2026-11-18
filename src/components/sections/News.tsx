@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -17,7 +19,18 @@ const covers = [
   "linear-gradient(135deg, #F58AA2, #C93A5C)",
 ];
 
-export default function News({ locale, t, items }: { locale: Locale; t: Dictionary["news"]; items: NewsItem[] }) {
+export default function News({
+  locale,
+  t,
+  items,
+  more,
+}: {
+  locale: Locale;
+  t: Dictionary["news"];
+  items: NewsItem[];
+  /** Home page: link to the full news page */
+  more?: { href: string; label: string };
+}) {
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -42,6 +55,14 @@ export default function News({ locale, t, items }: { locale: Locale; t: Dictiona
             <p className="eyebrow">{t.eyebrow}</p>
             <h2 className="mt-4 text-4xl font-black text-navy md:text-6xl">{t.title}</h2>
           </div>
+          {more && (
+            <Link href={more.href} className="btn btn-ghost">
+              {more.label}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="rtl:-scale-x-100">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </Link>
+          )}
         </div>
 
         <div className="news-grid mt-12 grid gap-6 md:grid-cols-3">
@@ -52,10 +73,20 @@ export default function News({ locale, t, items }: { locale: Locale; t: Dictiona
                   className="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-[2rem]"
                   style={{ background: covers[i % covers.length] }}
                 >
-                  <SwirlMark
-                    mono
-                    className="h-[70%] text-white/25 transition-transform duration-700 ease-out group-hover:rotate-[-8deg] group-hover:scale-110"
-                  />
+                  {n.cover ? (
+                    <Image
+                      src={n.cover.url}
+                      alt={n.cover.alt[locale] || n.title[locale]}
+                      fill
+                      sizes="(min-width: 768px) 33vw, 100vw"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
+                  ) : (
+                    <SwirlMark
+                      mono
+                      className="h-[70%] text-white/25 transition-transform duration-700 ease-out group-hover:rotate-[-8deg] group-hover:scale-110"
+                    />
+                  )}
                   <span className="absolute bottom-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-navy backdrop-blur ltr:left-4 rtl:right-4">
                     {n.source[locale]}
                   </span>

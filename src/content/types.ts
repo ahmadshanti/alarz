@@ -8,6 +8,14 @@ export type Localized = Record<Locale, string>;
 
 export type CategoryId = "single" | "family" | "occasion";
 
+/** An image uploaded through the CMS (Payload media collection). */
+export interface CmsImage {
+  url: string;
+  alt: Localized;
+  width: number;
+  height: number;
+}
+
 export interface Category {
   id: CategoryId;
   name: Localized;
@@ -32,6 +40,8 @@ export interface Product {
   /** Size label, e.g. "4.5 L" */
   size?: Localized;
   colors: FlavorColors;
+  /** Uploaded product photo; when missing the tinted illustration is shown */
+  image?: CmsImage;
   featured?: boolean;
   order: number;
 }
@@ -50,6 +60,8 @@ export interface NewsItem {
   excerpt: Localized;
   source: Localized;
   url?: string;
+  /** Uploaded cover; when missing the coloured cover is shown */
+  cover?: CmsImage;
 }
 
 export interface QualityItem {
@@ -60,10 +72,12 @@ export interface QualityItem {
   year?: string;
 }
 
-export interface HeroFlavor {
+export interface CharmsFlavor {
   id: string;
   name: Localized;
-  colors: FlavorColors;
+  /** Wrapper colour on the real pack */
+  pack: string;
+  packDeep: string;
 }
 
 export interface SiteSettings {

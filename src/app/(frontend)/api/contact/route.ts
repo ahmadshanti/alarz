@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
+import { saveContactMessage, type ContactMessage } from "@/lib/cms";
 
 const TYPES = ["general", "distributor", "feedback"] as const;
 
 /**
- * Contact form endpoint.
- * TODO (CMS phase): save to the Payload "messages" collection and email the sales team.
+ * Contact form endpoint: validates, then stores the message in the CMS "messages" collection.
+ * (The public REST API cannot create messages — only this route can, via overrideAccess.)
+ * TODO: email the sales team once an email adapter is configured (see README).
  */
 export async function POST(req: Request) {
   let body: Record<string, unknown>;
@@ -17,7 +19,10 @@ export async function POST(req: Request) {
   const name = String(body.name ?? "").trim();
   const phone = String(body.phone ?? "").trim();
   const message = String(body.message ?? "").trim();
-  const type = TYPES.includes(body.type as (typeof TYPES)[number]) ? body.type : "general";
+  const type: ContactMessage["type"] = TYPES.includes(body.type as (typeof TYPES)[number])
+    ? (body.type as ContactMessage["type"])
+    : "general";
+  const locale: ContactMessage["locale"] = body.locale === "en" ? "en" : "ar";
 
   if (name.length < 2 || phone.length < 6 || message.length < 2) {
     return NextResponse.json({ error: "validation" }, { status: 422 });
@@ -26,8 +31,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "too_long" }, { status: 422 });
   }
 
-  // Placeholder until the CMS is connected
-  console.info("[contact]", { name, phone, type, message: message.slice(0, 200) });
+  try {
+    await saveContactMessage({ name, phone, type, message, locale });
+  } catch (err) {
+    console.error("[contact] could not save message", err);
+    return NextResponse.json({ error: "server" }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }

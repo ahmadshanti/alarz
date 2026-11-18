@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import clsx from "clsx";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -12,7 +13,7 @@ import ProductArt from "@/components/ui/ProductArt";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-function ProductCard({ p, locale }: { p: Product; locale: Locale }) {
+export function ProductCard({ p, locale }: { p: Product; locale: Locale }) {
   const ref = useRef<HTMLElement>(null);
 
   // 3D tilt following the pointer
@@ -46,15 +47,26 @@ function ProductCard({ p, locale }: { p: Product; locale: Locale }) {
           style={{ background: `radial-gradient(circle at 50% 60%, ${p.colors.base}cc, ${p.colors.base}33 70%)` }}
         >
           <div
-            className="absolute size-[70%] rounded-full opacity-60 blur-2xl transition-transform duration-700 group-hover:scale-125"
-            style={{ background: p.colors.base }}
+            className="absolute size-[90%] rounded-full opacity-70 transition-transform duration-700 group-hover:scale-125"
+            style={{ background: `radial-gradient(closest-side, ${p.colors.base}, transparent)` }}
           />
-          <ProductArt
-            id={p.id}
-            category={p.category}
-            colors={p.colors}
-            className="relative h-[78%] w-auto drop-shadow-[0_18px_18px_rgba(13,47,94,0.25)] transition-transform duration-500 ease-[var(--ease-bounce)] group-hover:-translate-y-2 group-hover:rotate-[-6deg] group-hover:scale-110"
-          />
+          {p.image ? (
+            <Image
+              src={p.image.url}
+              alt={p.image.alt[locale] || p.line[locale]}
+              width={p.image.width}
+              height={p.image.height}
+              sizes="(min-width: 1280px) 15rem, (min-width: 768px) 30vw, 45vw"
+              className="relative h-[78%] w-auto object-contain drop-shadow-[0_18px_18px_rgba(13,47,94,0.25)] transition-transform duration-500 ease-[var(--ease-bounce)] group-hover:-translate-y-2 group-hover:rotate-[-6deg] group-hover:scale-110"
+            />
+          ) : (
+            <ProductArt
+              id={p.id}
+              category={p.category}
+              colors={p.colors}
+              className="relative h-[78%] w-auto drop-shadow-[0_18px_18px_rgba(13,47,94,0.25)] transition-transform duration-500 ease-[var(--ease-bounce)] group-hover:-translate-y-2 group-hover:rotate-[-6deg] group-hover:scale-110"
+            />
+          )}
           {p.featured && (
             <span className="absolute top-3 rounded-full bg-navy px-3 py-1 text-xs font-bold text-white ltr:left-3 rtl:right-3">
               {locale === "ar" ? "مميز" : "Featured"}

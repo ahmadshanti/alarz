@@ -1,4 +1,4 @@
-import type { HeroFlavor, Milestone, NewsItem, QualityItem, SiteSettings } from "./types";
+import type { CharmsFlavor, Milestone, NewsItem, QualityItem, SiteSettings } from "./types";
 
 // Facts taken from the current alarz.ps pages (Our Story, Health & Quality, News, Contact).
 
@@ -142,11 +142,10 @@ export const news: NewsItem[] = [
   },
 ];
 
-export const heroFlavors: HeroFlavor[] = [
-  { id: "vanilla", name: { ar: "فانيلا", en: "Vanilla" }, colors: { base: "#FBEFC9", accent: "#E5BF5F" } },
-  { id: "chocolate", name: { ar: "شوكولاتة", en: "Chocolate" }, colors: { base: "#7A4529", accent: "#3B1E10" } },
-  { id: "strawberry", name: { ar: "فراولة", en: "Strawberry" }, colors: { base: "#F58AA2", accent: "#C93A5C" } },
-  { id: "pistachio", name: { ar: "فستق حلبي", en: "Pistachio" }, colors: { base: "#B8D27E", accent: "#6A8A38" } },
-  { id: "mastic", name: { ar: "مستكة", en: "Mastic" }, colors: { base: "#F5F2E7", accent: "#BCCDA5" } },
-  { id: "orange", name: { ar: "برتقال", en: "Orange" }, colors: { base: "#FFA040", accent: "#F26A00" } },
+// The four Charms packs shown in the "rank them" artwork
+export const charmsFlavors: CharmsFlavor[] = [
+  { id: "almonds", name: { ar: "لوز", en: "Almonds" }, pack: "#2a63b8", packDeep: "#143f80" },
+  { id: "double-chocolate", name: { ar: "شوكولاتة مزدوجة", en: "Double Chocolate" }, pack: "#7a4529", packDeep: "#3b1e10" },
+  { id: "cookies-cream", name: { ar: "كوكيز وكريم", en: "Cookies & Cream" }, pack: "#3a3a3d", packDeep: "#111113" },
+  { id: "strawberry-white", name: { ar: "فراولة وشوكولاتة بيضاء", en: "Strawberry & White Chocolate" }, pack: "#e0323a", packDeep: "#a3141c" },
 ];

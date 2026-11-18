@@ -64,7 +64,7 @@ export default function Contact({
     <section ref={root} id="contact" className="py-16 md:py-24">
       <div className="container-x">
         <div className="contact-panel relative overflow-hidden rounded-[2.5rem] bg-navy p-8 text-white md:p-14">
-          <div className="pointer-events-none absolute -bottom-40 size-[30rem] rounded-full bg-orange/30 blur-3xl ltr:-right-20 rtl:-left-20" />
+          <div className="pointer-events-none absolute -bottom-40 size-[30rem] rounded-full bg-[radial-gradient(closest-side,_rgb(254_178_88/0.35),_transparent)] ltr:-right-20 rtl:-left-20" />
           <SwirlMark mono className="pointer-events-none absolute -top-10 h-72 text-white/[0.05] ltr:-right-6 rtl:-left-6" />
 
           <div className="relative grid gap-12 lg:grid-cols-2">

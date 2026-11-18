@@ -9,7 +9,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const icons: Record<QualityItem["icon"], React.ReactNode> = {
+export const qualityIcons: Record<QualityItem["icon"], React.ReactNode> = {
   lab: <path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21.5h11.6a2 2 0 0 0 1.7-3L14 9V3M7 15h10" />,
   shield: <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM8.5 12l2.5 2.5 4.5-5" />,
   badge: <path d="M12 2l2.4 2.1 3.2-.3.7 3.1 2.8 1.6-1.3 2.9 1.3 2.9-2.8 1.6-.7 3.1-3.2-.3L12 22l-2.4-2.1-3.2.3-.7-3.1-2.8-1.6 1.3-2.9-1.3-2.9 2.8-1.6.7-3.1 3.2.3zM9 12l2 2 4-4" />,
@@ -44,7 +44,7 @@ export default function Quality({ locale, t, items }: { locale: Locale; t: Dicti
 
   return (
     <section ref={root} id="quality" className="relative overflow-hidden bg-cream-deep/60 py-24 md:py-32">
-      <div className="pointer-events-none absolute -top-40 size-[34rem] rounded-full bg-orange/25 blur-3xl ltr:-left-40 rtl:-right-40" />
+      <div className="pointer-events-none absolute -top-40 size-[34rem] rounded-full bg-[radial-gradient(closest-side,_rgb(254_178_88/0.3),_transparent)] ltr:-left-40 rtl:-right-40" />
       <div className="container-x relative grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-center">
         <div className="q-head">
           <p className="eyebrow">{t.eyebrow}</p>
@@ -67,7 +67,7 @@ export default function Quality({ locale, t, items }: { locale: Locale; t: Dicti
                   }`}
                 >
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    {icons[item.icon]}
+                    {qualityIcons[item.icon]}
                   </svg>
                 </span>
                 {item.year && (

@@ -1,0 +1,13 @@
+/* Admin panel tweaks (logo sizing for the custom graphics) */
+.graphic-logo {
+  display: block;
+  height: auto;
+  max-width: 220px;
+  width: 100%;
+}
+
+.graphic-icon {
+  display: block;
+  height: 28px;
+  width: 28px;
+}

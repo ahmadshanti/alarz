@@ -1,7 +1,9 @@
 import type { Locale, SiteSettings } from "@/content/types";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { formatNumber } from "@/i18n/config";
+import Link from "next/link";
 import Drip from "@/components/ui/Drip";
+import { pageHref } from "@/i18n/routes";
 
 export default function Footer({
   locale,
@@ -16,11 +18,12 @@ export default function Footer({
 }) {
   const year = formatNumber(new Date().getFullYear(), locale, { useGrouping: false });
   const links = [
-    ["#story", nav.story],
-    ["#products", nav.products],
-    ["#quality", nav.quality],
-    ["#news", nav.news],
-    ["#contact", nav.contact],
+    [pageHref(locale), nav.home],
+    [pageHref(locale, "story"), nav.story],
+    [pageHref(locale, "products"), nav.products],
+    [pageHref(locale, "quality"), nav.quality],
+    [pageHref(locale, "news"), nav.news],
+    [pageHref(locale, "contact"), nav.contact],
   ] as const;
 
   return (
@@ -39,9 +42,9 @@ export default function Footer({
             <ul className="space-y-3">
               {links.map(([href, label]) => (
                 <li key={href}>
-                  <a href={href} className="font-bold text-white/75 transition hover:text-orange">
+                  <Link href={href} className="font-bold text-white/75 transition hover:text-orange">
                     {label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
