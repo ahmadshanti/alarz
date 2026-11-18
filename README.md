@@ -112,10 +112,12 @@ public/
    npm run payload -- migrate          # run in CI / before `next start`
    ```
    Commit the generated `src/migrations` folder.
-2. **Storage adapter for uploads.** Uploaded images go to the local `media/` folder, which
-   does not survive on serverless hosts (Vercel etc.). Add a storage adapter, e.g.
-   `@payloadcms/storage-s3` (S3 / Cloudflare R2) or `@payloadcms/storage-vercel-blob`,
-   and update `images` in `next.config.ts` if files are served from another domain.
+2. **Uploads.** Images uploaded in the admin are saved to `public/media` and committed with
+   the code, so each deploy ships them and they are served as static files (`/media/<file>`).
+   Workflow: upload/replace images in the **local** admin, then commit and push.
+   Uploads made from the admin on Vercel are not kept (its disk is temporary). If the company
+   needs to upload directly on the live site, add a storage adapter such as
+   `@payloadcms/storage-vercel-blob` or `@payloadcms/storage-s3`.
 3. **Email adapter.** To email the sales team about new contact messages (and for
    password-reset emails), add `@payloadcms/email-nodemailer` or `@payloadcms/email-resend`,
    then send to `site-settings.notifyEmail` from `src/app/(frontend)/api/contact/route.ts`.

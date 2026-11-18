@@ -18,8 +18,10 @@ export const Media: CollectionConfig = {
   },
   hooks: revalidateHooks,
   upload: {
-    // <project root>/media (git-ignored). Use a storage adapter in production — see README.
-    staticDir: path.resolve(process.cwd(), "media"),
+    // Stored in public/media and committed with the code, so every deploy ships the images
+    // and the site serves them as static files (/media/<file>).
+    // Note: on Vercel, uploads made from the live admin are NOT kept — upload locally, then push.
+    staticDir: path.resolve(process.cwd(), "public/media"),
     mimeTypes: ["image/*"],
     adminThumbnail: "thumb",
     imageSizes: [

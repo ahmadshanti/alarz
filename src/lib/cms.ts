@@ -85,13 +85,15 @@ function locOptional(v: unknown): Localized | undefined {
 }
 
 /**
- * Payload returns absolute media URLs (serverURL is set). next/image only allows our own
- * media through images.localPatterns, so turn links to our Payload media into relative paths.
+ * Payload returns media URLs like http://host/api/media/file/<name>. The files live in
+ * public/media and ship with every deploy, so point straight at the static file (/media/<name>):
+ * relative (no hostname config for next/image) and served by the CDN.
  */
 function toRelative(url: string) {
   try {
     const u = new URL(url, "http://x");
-    return u.pathname.startsWith("/api/media/") ? u.pathname + u.search : url;
+    if (u.pathname.startsWith("/api/media/file/")) return u.pathname.replace("/api/media/file/", "/media/");
+    return url;
   } catch {
     return url;
   }
