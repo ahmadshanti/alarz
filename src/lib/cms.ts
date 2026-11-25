@@ -323,3 +323,51 @@ export async function saveContactMessage(data: ContactMessage): Promise<boolean>
   });
   return true;
 }
+
+/* ------------------------------------------------------------------ */
+/* Points of sale (map)                                                 */
+/* ------------------------------------------------------------------ */
+
+export type StoreType = "supermarket" | "minimarket" | "mall" | "other";
+
+/** Compact shape sent to the map (thousands of points, so short and flat). */
+export interface StorePoint {
+  id: number;
+  lat: number;
+  lng: number;
+  name: string;
+  nameEn?: string;
+  type: StoreType;
+  city?: string;
+  address?: string;
+  featured?: boolean;
+}
+
+/** Every active point of sale. Empty when there is no database. */
+export async function getPointsOfSale(): Promise<StorePoint[]> {
+  return fromCms(
+    "points-of-sale",
+    async (payload) => {
+      const { docs } = await payload.find({
+        collection: "points-of-sale",
+        where: { active: { equals: true } },
+        limit: 0,
+        pagination: false,
+        depth: 0,
+        select: { name: true, nameEn: true, type: true, city: true, address: true, lat: true, lng: true, featured: true },
+      });
+      return (docs as unknown as Doc[]).map((d) => ({
+        id: Number(d.id),
+        lat: Math.round((d.lat as number) * 1e5) / 1e5,
+        lng: Math.round((d.lng as number) * 1e5) / 1e5,
+        name: str(d.name),
+        nameEn: str(d.nameEn) || undefined,
+        type: ((d.type as StoreType) ?? "other") as StoreType,
+        city: str(d.city) || undefined,
+        address: str(d.address) || undefined,
+        featured: d.featured ? true : undefined,
+      }));
+    },
+    () => [],
+  );
+}

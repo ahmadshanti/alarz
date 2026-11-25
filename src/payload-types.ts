@@ -70,6 +70,7 @@ export interface Config {
     products: Product;
     categories: Category;
     news: News;
+    'points-of-sale': PointsOfSale;
     milestones: Milestone;
     'quality-items': QualityItem;
     media: Media;
@@ -85,6 +86,7 @@ export interface Config {
     products: ProductsSelect<false> | ProductsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
+    'points-of-sale': PointsOfSaleSelect<false> | PointsOfSaleSelect<true>;
     milestones: MilestonesSelect<false> | MilestonesSelect<true>;
     'quality-items': QualityItemsSelect<false> | QualityItemsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -245,6 +247,39 @@ export interface News {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "points-of-sale".
+ */
+export interface PointsOfSale {
+  id: number;
+  name: string;
+  nameEn?: string | null;
+  type: 'supermarket' | 'minimarket' | 'mall' | 'other';
+  city?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  /**
+   * e.g. 32.2282
+   */
+  lat: number;
+  /**
+   * e.g. 35.2222
+   */
+  lng: number;
+  active?: boolean | null;
+  /**
+   * Highlighted on the map.
+   */
+  featured?: boolean | null;
+  source?: ('osm' | 'manual') | null;
+  /**
+   * Used by the importer
+   */
+  osmId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "milestones".
  */
 export interface Milestone {
@@ -356,6 +391,10 @@ export interface PayloadLockedDocument {
         value: number | News;
       } | null)
     | ({
+        relationTo: 'points-of-sale';
+        value: number | PointsOfSale;
+      } | null)
+    | ({
         relationTo: 'milestones';
         value: number | Milestone;
       } | null)
@@ -464,6 +503,26 @@ export interface NewsSelect<T extends boolean = true> {
   url?: T;
   date?: T;
   published?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "points-of-sale_select".
+ */
+export interface PointsOfSaleSelect<T extends boolean = true> {
+  name?: T;
+  nameEn?: T;
+  type?: T;
+  city?: T;
+  address?: T;
+  phone?: T;
+  lat?: T;
+  lng?: T;
+  active?: T;
+  featured?: T;
+  source?: T;
+  osmId?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -15,6 +15,7 @@ import { Milestones } from "./payload/collections/Milestones";
 import { QualityItems } from "./payload/collections/QualityItems";
 import { News } from "./payload/collections/News";
 import { Messages } from "./payload/collections/Messages";
+import { PointsOfSale } from "./payload/collections/PointsOfSale";
 import { Homepage } from "./payload/globals/Homepage";
 import { SiteSettings } from "./payload/globals/SiteSettings";
 
@@ -41,7 +42,7 @@ export default buildConfig({
     },
   },
 
-  collections: [Products, Categories, News, Milestones, QualityItems, Media, Messages, Users],
+  collections: [Products, Categories, News, PointsOfSale, Milestones, QualityItems, Media, Messages, Users],
   globals: [Homepage, SiteSettings],
 
   editor: lexicalEditor(),

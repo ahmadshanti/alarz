@@ -21,6 +21,7 @@ export default function Footer({
     [pageHref(locale), nav.home],
     [pageHref(locale, "story"), nav.story],
     [pageHref(locale, "products"), nav.products],
+    [pageHref(locale, "stores"), nav.stores],
     [pageHref(locale, "quality"), nav.quality],
     [pageHref(locale, "news"), nav.news],
     [pageHref(locale, "contact"), nav.contact],

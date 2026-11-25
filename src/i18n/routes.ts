@@ -1,7 +1,7 @@
 import type { Locale } from "@/content/types";
 
 /** Site pages (besides the home page). The key doubles as the URL segment and the nav label key. */
-export const pageKeys = ["story", "products", "quality", "news", "contact"] as const;
+export const pageKeys = ["story", "products", "stores", "quality", "news", "contact"] as const;
 export type PageKey = (typeof pageKeys)[number];
 
 export function pageHref(locale: Locale, page?: PageKey) {

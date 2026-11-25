@@ -8,7 +8,7 @@ import type { Locale } from "@/content/types";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { pageHref, switchLocaleHref } from "@/i18n/routes";
 
-const navKeys = ["story", "products", "quality", "news"] as const;
+const navKeys = ["story", "products", "stores", "quality", "news"] as const;
 
 export default function Header({ locale, t }: { locale: Locale; t: Dictionary["nav"] }) {
   const [scrolled, setScrolled] = useState(false);

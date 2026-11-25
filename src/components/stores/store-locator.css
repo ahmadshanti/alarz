@@ -1,0 +1,368 @@
+/* Store locator (where-to-buy map). Loaded only on the /stores page. */
+
+.sl-skeleton {
+  background:
+    linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.6) 50%, transparent 70%) 0 0 / 200% 100%,
+    #f3ece0;
+  animation: sl-shimmer 1.4s linear infinite;
+}
+@keyframes sl-shimmer {
+  to {
+    background-position: -200% 0, 0 0;
+  }
+}
+
+.sl-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  background: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-navy-ink);
+  box-shadow: 0 10px 30px -18px rgb(13 47 94 / 0.5);
+}
+.sl-stat b {
+  color: var(--color-navy);
+  font-weight: 900;
+}
+.sl-stat--orange {
+  background: var(--color-orange);
+}
+
+.sl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-radius: 1rem;
+  padding: 0.8rem 0.75rem;
+  font-size: 0.92rem;
+  font-weight: 800;
+  transition:
+    transform 0.25s var(--ease-bounce),
+    background-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
+}
+.sl-btn:hover {
+  transform: translateY(-2px);
+}
+.sl-btn:focus-visible,
+.sl-chip:focus-visible,
+.sl-card:focus-visible,
+.sl-rank:focus-visible {
+  outline: 3px solid var(--color-orange);
+  outline-offset: 2px;
+}
+.sl-btn--primary {
+  background: var(--color-navy);
+  color: white;
+  box-shadow: 0 12px 24px -12px rgb(25 78 145 / 0.7);
+}
+.sl-btn--primary:disabled {
+  opacity: 0.7;
+}
+.sl-btn--ghost {
+  background: var(--color-cream);
+  color: var(--color-navy);
+  box-shadow: inset 0 0 0 2px rgb(25 78 145 / 0.12);
+}
+.sl-btn--active {
+  background: var(--color-orange);
+  color: var(--color-navy-ink);
+}
+
+.sl-chip {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--color-navy);
+  background: var(--color-cream);
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+.sl-chip.is-on {
+  background: var(--color-navy);
+  color: white;
+}
+.sl-chip__n {
+  border-radius: 999px;
+  background: rgb(25 78 145 / 0.1);
+  padding: 0 0.4rem;
+  font-size: 0.72rem;
+}
+.sl-chip.is-on .sl-chip__n {
+  background: var(--color-orange);
+  color: var(--color-navy-ink);
+}
+
+/* nearest list */
+.sl-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(25 78 145 / 0.25) transparent;
+}
+.sl-item {
+  animation: sl-item-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 35ms);
+}
+@keyframes sl-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+.sl-card {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 1.1rem;
+  padding: 0.7rem 0.75rem;
+  text-align: start;
+  transition: background-color 0.2s;
+}
+.sl-card:hover {
+  background: var(--color-cream);
+}
+.sl-card.is-active {
+  background: #eef4fc;
+}
+.sl-card__rank {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border-radius: 0.7rem;
+  background: var(--color-cream);
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: var(--color-navy);
+}
+.sl-card__rank.is-ranked {
+  background: var(--color-orange);
+  color: var(--color-navy-ink);
+}
+.sl-card.is-active .sl-card__rank {
+  background: var(--color-navy);
+  color: white;
+}
+.sl-dir {
+  margin: 0.15rem 0.75rem 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 0.9rem;
+  background: var(--color-navy);
+  padding: 0.6rem;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: white;
+}
+
+/* overlays on the map */
+.sl-hint span {
+  display: inline-block;
+  border-radius: 999px;
+  background: var(--color-navy-ink);
+  padding: 0.55rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: white;
+  box-shadow: 0 12px 30px -10px rgb(8 29 60 / 0.6);
+  animation: float-y 2.4s ease-in-out infinite;
+}
+.sl-float {
+  border-radius: 999px;
+  background: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--color-navy);
+  box-shadow: 0 10px 24px -12px rgb(8 29 60 / 0.5);
+}
+
+/* origin pin (university / you) */
+.sl-origin {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+}
+.sl-origin:active {
+  cursor: grabbing;
+}
+.sl-origin__dot {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999px;
+  background: var(--color-navy);
+  color: white;
+  border: 4px solid white;
+  box-shadow: 0 10px 24px -6px rgb(8 29 60 / 0.6);
+}
+.sl-origin--university .sl-origin__dot {
+  background: var(--color-navy-ink);
+  color: var(--color-orange);
+}
+.sl-origin__pulse {
+  position: absolute;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999px;
+  background: rgb(25 78 145 / 0.35);
+  animation: sl-pulse 2s ease-out infinite;
+}
+@keyframes sl-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+.sl-origin__label {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  white-space: nowrap;
+  border-radius: 0.8rem;
+  background: var(--color-navy-ink);
+  padding: 0.3rem 0.7rem;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: white;
+  box-shadow: 0 8px 20px -8px rgb(8 29 60 / 0.6);
+}
+.sl-origin__label small {
+  display: block;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: rgb(255 255 255 / 0.6);
+}
+
+/* numbered pins for the nearest shops */
+.sl-rank {
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50% 50% 50% 0;
+  rotate: -45deg;
+  background: var(--color-orange);
+  border: 3px solid white;
+  box-shadow: 0 8px 18px -6px rgb(8 29 60 / 0.55);
+  cursor: pointer;
+  animation: sl-drop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: var(--delay, 0ms);
+  transition:
+    background-color 0.2s,
+    width 0.2s,
+    height 0.2s;
+}
+.sl-rank span {
+  rotate: 45deg;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: var(--color-navy-ink);
+}
+.sl-rank--featured {
+  border-color: var(--color-orange-deep);
+}
+.sl-rank:hover,
+.sl-rank.is-active {
+  z-index: 4;
+  width: 2.6rem;
+  height: 2.6rem;
+  background: var(--color-navy);
+}
+.sl-rank:hover span,
+.sl-rank.is-active span {
+  color: white;
+}
+@keyframes sl-drop {
+  from {
+    opacity: 0;
+    translate: 0 -24px;
+  }
+}
+
+/* popup */
+.sl-popup .maplibregl-popup-content {
+  border-radius: 1.1rem;
+  padding: 0.9rem 1rem 1rem;
+  box-shadow: 0 20px 40px -16px rgb(8 29 60 / 0.5);
+  font-family: var(--font-sans);
+}
+.sl-popup .maplibregl-popup-close-button {
+  font-size: 1.1rem;
+  padding: 0.2rem 0.5rem;
+  color: var(--color-navy);
+}
+.sl-pop {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--color-navy-ink);
+}
+.sl-pop strong {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--color-navy);
+  padding-inline-end: 1rem;
+}
+.sl-pop__type {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--c);
+}
+.sl-pop__addr,
+.sl-pop__dist {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgb(8 29 60 / 0.6);
+}
+.sl-pop__btn {
+  margin-top: 0.45rem;
+  border-radius: 0.8rem;
+  background: var(--color-navy);
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: white !important;
+}
+.maplibregl-ctrl-attrib {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sl-item,
+  .sl-rank,
+  .sl-origin__pulse,
+  .sl-hint span,
+  .sl-skeleton {
+    animation: none;
+  }
+}
