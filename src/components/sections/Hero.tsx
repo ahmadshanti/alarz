@@ -88,7 +88,7 @@ export default function Hero({
         .from(".hero-sub", { y: 24, autoAlpha: 0, duration: 1 }, 0.55)
         .from(".hero-cta > *", { y: 24, autoAlpha: 0, duration: 0.9, stagger: 0.1 }, 0.7)
         .from(".hero-stage", { scale: 0.85, autoAlpha: 0, duration: 1.6 }, 0.15)
-        .from(".hero-chips > *", { y: 24, autoAlpha: 0, duration: 0.8, stagger: 0.06, ease: "back.out(1.7)" }, 0.9);
+        .from(".hero-chips > *", { scale: 0.85, autoAlpha: 0, duration: 0.7, stagger: 0.06, ease: "back.out(1.7)" }, 0.9);
 
       gsap.matchMedia().add("(min-width: 1024px)", () => {
         gsap.to(".hero-canvas", {

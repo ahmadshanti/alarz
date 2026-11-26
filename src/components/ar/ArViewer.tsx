@@ -146,7 +146,7 @@ export default function ArViewer({
 
         {/* ---------- 3D viewer ---------- */}
         {/* dir="ltr": model-viewer positions its canvas wrongly inside right-to-left pages */}
-        <div dir="ltr" className="ar-stage relative aspect-square min-h-[20rem] md:aspect-auto md:min-h-[34rem]">
+        <div dir="ltr" className="ar-stage relative isolate h-[min(88vw,24rem)] shrink-0 overflow-hidden md:h-auto md:min-h-[34rem]">
           {ready && !failed && (
             <model-viewer
               ref={attach}

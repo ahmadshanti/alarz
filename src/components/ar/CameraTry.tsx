@@ -44,13 +44,18 @@ export default function CameraTry({
   const [photo, setPhoto] = useState<{ url: string; blob: Blob } | null>(null);
   const [busy, setBusy] = useState(false);
   const [hint, setHint] = useState(true);
+  // what ONE finger does: spin the bar in 3D (default) or slide it around the table
+  const [mode, setMode] = useState<"rotate" | "move">("rotate");
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
 
   // live transform, kept in a ref and written straight to the DOM (no React re-render per move)
-  const pose = useRef({ x: 0, y: 0, scale: 1, yaw: 25 });
+  // yaw = turn around, pitch = tilt (how far above the table we look from)
+  const pose = useRef({ x: 0, y: 0, scale: 1, yaw: 25, pitch: 56 });
   const apply = useCallback(() => {
-    const { x, y, scale, yaw } = pose.current;
+    const { x, y, scale, yaw, pitch } = pose.current;
     if (holder.current) holder.current.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) scale(${scale})`;
-    viewer.current?.setAttribute("camera-orbit", `${yaw}deg 56deg 105%`);
+    viewer.current?.setAttribute("camera-orbit", `${yaw}deg ${pitch}deg 105%`);
   }, []);
 
   /* ---------- camera ---------- */
@@ -91,13 +96,32 @@ export default function CameraTry({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose, photo]);
 
-  /* ---------- gestures: 1 finger move, 2 fingers pinch + twist ---------- */
+  /* ---------- gestures ----------
+     one finger   → spin in 3D (left/right turns it, up/down tilts it) — or slide it, in "move" mode
+     two fingers  → slide it (follows the midpoint) + pinch to resize + twist to turn */
   const pointers = useRef(new Map<number, { x: number; y: number }>());
-  const gesture = useRef<{ dist: number; angle: number; scale: number; yaw: number } | null>(null);
+  const gesture = useRef<{
+    dist: number;
+    angle: number;
+    mid: { x: number; y: number };
+    scale: number;
+    yaw: number;
+    x: number;
+    y: number;
+  } | null>(null);
 
   const twoFinger = () => {
     const [a, b] = [...pointers.current.values()];
-    return { dist: Math.hypot(b.x - a.x, b.y - a.y), angle: (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI };
+    return {
+      dist: Math.hypot(b.x - a.x, b.y - a.y),
+      angle: (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI,
+      mid: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
+    };
+  };
+  const keepOnScreen = () => {
+    const r = stage.current!.getBoundingClientRect();
+    pose.current.x = clamp(pose.current.x, -r.width / 2, r.width / 2);
+    pose.current.y = clamp(pose.current.y, -r.height / 2, r.height / 2);
   };
 
   const onDown = (e: React.PointerEvent) => {
@@ -106,7 +130,8 @@ export default function CameraTry({
     setHint(false);
     if (pointers.current.size === 2) {
       const g = twoFinger();
-      gesture.current = { ...g, scale: pose.current.scale, yaw: pose.current.yaw };
+      const { scale, yaw, x, y } = pose.current;
+      gesture.current = { ...g, scale, yaw, x, y };
     }
   };
   const onMove = (e: React.PointerEvent) => {
@@ -114,16 +139,25 @@ export default function CameraTry({
     if (!prev) return;
     const next = { x: e.clientX, y: e.clientY };
     pointers.current.set(e.pointerId, next);
+    const dx = next.x - prev.x,
+      dy = next.y - prev.y;
     if (pointers.current.size === 1) {
-      pose.current.x += next.x - prev.x;
-      pose.current.y += next.y - prev.y;
-      const r = stage.current!.getBoundingClientRect();
-      pose.current.x = clamp(pose.current.x, -r.width / 2, r.width / 2);
-      pose.current.y = clamp(pose.current.y, -r.height / 2, r.height / 2);
+      if (modeRef.current === "rotate") {
+        pose.current.yaw -= dx * 0.6;
+        pose.current.pitch = clamp(pose.current.pitch - dy * 0.35, 12, 100);
+      } else {
+        pose.current.x += dx;
+        pose.current.y += dy;
+        keepOnScreen();
+      }
     } else if (pointers.current.size === 2 && gesture.current) {
       const g = twoFinger();
-      pose.current.scale = clamp((g.dist / gesture.current.dist) * gesture.current.scale, 0.35, 3);
-      pose.current.yaw = gesture.current.yaw - (g.angle - gesture.current.angle);
+      const st = gesture.current;
+      pose.current.scale = clamp((g.dist / st.dist) * st.scale, 0.35, 3);
+      pose.current.yaw = st.yaw - (g.angle - st.angle);
+      pose.current.x = st.x + (g.mid.x - st.mid.x);
+      pose.current.y = st.y + (g.mid.y - st.mid.y);
+      keepOnScreen();
     }
     apply();
   };
@@ -134,10 +168,6 @@ export default function CameraTry({
   // mouse wheel = zoom (laptops)
   const onWheel = (e: React.WheelEvent) => {
     pose.current.scale = clamp(pose.current.scale * (e.deltaY < 0 ? 1.08 : 0.93), 0.35, 3);
-    apply();
-  };
-  const rotate = (deg: number) => {
-    pose.current.yaw += deg;
     apply();
   };
 
@@ -295,11 +325,24 @@ export default function CameraTry({
           ))}
         </div>
         <div className="arc-actions">
-          <button type="button" onClick={() => rotate(-45)} className="arc-round" aria-label={t.rotate}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
-              <path d="M3 3v5h5" />
-            </svg>
+          <button
+            type="button"
+            onClick={() => setMode((m) => (m === "rotate" ? "move" : "rotate"))}
+            className="arc-mode"
+            aria-label={mode === "rotate" ? t.modeMove : t.modeRotate}
+            aria-pressed={mode === "move"}
+          >
+            {mode === "rotate" ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M12 2v20M2 12h20M9 5l3-3 3 3M9 19l3 3 3-3M5 9l-3 3 3 3M19 9l3 3-3 3" />
+              </svg>
+            )}
+            <span>{mode === "rotate" ? t.modeRotate : t.modeMove}</span>
           </button>
           <button type="button" onClick={capture} disabled={state !== "live" || busy} className="arc-shutter" aria-label={t.capture}>
             <span />
@@ -307,7 +350,7 @@ export default function CameraTry({
           <button
             type="button"
             onClick={() => {
-              pose.current = { x: 0, y: 0, scale: 1, yaw: 25 };
+              pose.current = { x: 0, y: 0, scale: 1, yaw: 25, pitch: 56 };
               apply();
             }}
             className="arc-round"

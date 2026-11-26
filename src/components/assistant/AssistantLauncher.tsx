@@ -45,7 +45,7 @@ export default function AssistantLauncher({ locale, t }: { locale: Locale; t: Di
       <div className={clsx("as-launch", open && "is-open")}>
         {nudge && !open && (
           <button type="button" onClick={toggle} className="as-nudge">
-            {t.greeting.split(/[.!؟?]/)[0]}…
+            {t.nudge}
           </button>
         )}
         <button type="button" onClick={toggle} aria-expanded={open} aria-label={open ? t.close : t.open} className="as-fab">
