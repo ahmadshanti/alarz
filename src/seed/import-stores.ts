@@ -71,10 +71,11 @@ async function overpass(query: string): Promise<OsmElement[]> {
 
 /** Names that are clearly not food shops (OSM tags are sometimes wrong). Matched shops are hidden, not deleted. */
 const NOT_FOOD =
-  /electronic|system|mobile|phone|computer|laptop|tech|fashion|cloth|textile|shoe|boutique|pharm|optic|furniture|hardware|tools?|cosmetic|perfume|jewel|salon|barber|print|library|bookstore|stationery|toy|car|auto|tyre|tire|الكترون|إلكترون|موبايل|جوال|خلوي|كمبيوتر|حاسوب|ملابس|ألبسة|البسة|أحذية|احذية|صيدلي|بصريات|اثاث|أثاث|عطور|مجوهرات|صالون|حلاق|مكتبة|قرطاسية|ألعاب|العاب|سيارات|اطارات|إطارات/i;
+  /electronic|system|mobile|phone|computer|laptop|tech|fashion|cloth|textile|shoe|boutique|pharm|optic|furniture|hardware|tools?|cosmetic|perfume|jewel|salon|barber|print|library|bookstore|stationery|toy|car|auto|tyre|tire|الكترون|إلكترون|موبايل|جوال|خلوي|كمبيوتر|حاسوب|ملابس|ألبسة|البسة|أحذية|احذية|صيدلي|بصريات|اثاث|أثاث|فرش|موبيليا|ديكور|معرض|showroom|عطور|مجوهرات|صالون|حلاق|مكتبة|قرطاسية|ألعاب|العاب|سيارات|اطارات|إطارات/i;
 
 /** …unless the name also says it sells food (e.g. "ميني ماركت الجوال", "Golden Market"). */
-const FOOD_WORD = /market|mart|super|grocer|food|mini|mall|hyper|بقال|ماركت|سوبر|تموين|مول|غذائي|مواد غذائية|هايبر|مخبز|حلويات|ألبان|البان/i;
+// (no "mall/مول" here: a shop *inside* a mall is not food because of it; malls come from the OSM type)
+const FOOD_WORD = /market|mart|super|grocer|food|mini|hyper|بقال|ماركت|سوبر|تموين|غذائي|مواد غذائية|هايبر|مخبز|حلويات|ألبان|البان/i;
 const isNotFood = (name: string) => NOT_FOOD.test(name) && !FOOD_WORD.test(name);
 
 const HEBREW = /[֐-׿]/;

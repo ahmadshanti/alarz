@@ -1,0 +1,146 @@
+/* "Ice cream on your table" AR modal — loaded only when it opens. */
+
+.ar-modal {
+  animation: ar-fade 0.35s ease both;
+}
+.ar-panel {
+  animation: ar-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes ar-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes ar-rise {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.97);
+  }
+}
+
+.ar-stage {
+  background:
+    radial-gradient(circle at 50% 42%, #ffffff 0%, #fbf3e6 45%, #f1e2cc 100%);
+}
+.ar-stage model-viewer {
+  --poster-color: transparent;
+  --progress-bar-height: 0px;
+}
+
+.ar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.9);
+  padding: 0.4rem 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--color-navy);
+  box-shadow: 0 8px 20px -12px rgb(8 29 60 / 0.5);
+}
+
+.ar-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-deep) 100%);
+  padding: 1.05rem 1.25rem;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: white;
+  box-shadow: 0 18px 36px -16px rgb(25 78 145 / 0.8);
+  transition:
+    transform 0.3s var(--ease-bounce),
+    opacity 0.2s;
+}
+.ar-cta:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.01);
+}
+.ar-cta:disabled {
+  opacity: 0.5;
+}
+.ar-cta:focus-visible {
+  outline: 3px solid var(--color-orange);
+  outline-offset: 3px;
+}
+
+.ar-steps {
+  display: grid;
+  gap: 0.4rem;
+  counter-reset: ar;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: rgb(8 29 60 / 0.65);
+}
+.ar-steps li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  counter-increment: ar;
+}
+.ar-steps li::before {
+  content: counter(ar, arabic-indic);
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--color-orange);
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: var(--color-navy-ink);
+}
+:lang(en) .ar-steps li::before {
+  content: counter(ar);
+}
+
+.ar-qr svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* hero trigger */
+.ar-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--color-navy-ink), var(--color-navy));
+  padding: 0.6rem 1.1rem 0.6rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: white;
+  box-shadow: 0 14px 30px -14px rgb(8 29 60 / 0.8);
+  transition: transform 0.3s var(--ease-bounce);
+}
+.ar-trigger:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+.ar-trigger__icon {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: var(--color-orange);
+  color: var(--color-navy-ink);
+}
+.ar-trigger__new {
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.15);
+  padding: 0.05rem 0.45rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ar-modal,
+  .ar-panel {
+    animation: none;
+  }
+}

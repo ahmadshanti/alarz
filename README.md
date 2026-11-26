@@ -103,6 +103,23 @@ public/
   logo.svg, favicon.svg     vectorised from the original logo
 ```
 
+## Interactive features
+
+### Ask Al-Arz (AI assistant)
+- Floating button on every page; chat streams from `/api/assistant` (Google Gemini, Interactions API, free tier; model `gemini-3.5-flash-lite` (minimal thinking, ~1-3 s replies) with automatic fallback to `gemini-3.1-flash-lite` when busy or out of quota — override with `GEMINI_MODEL`). Gemini keeps the conversation (`previous_interaction_id`); the browser only holds the last interaction id.
+- Tools (`src/lib/assistant/tools.ts`, provider-independent) run on our server: `show_products` (catalogue cards), `find_nearest_stores` (shared location or a named town/landmark — see `src/lib/assistant/places.ts`), `submit_distributor_request` (saves to **Messages** after the visitor confirms).
+- Knowledge comes from the CMS (`src/lib/assistant/knowledge.ts`), so edits in /admin reach the assistant within 5 minutes.
+- Needs `GEMINI_API_KEY` (free from aistudio.google.com/apikey) locally in `.env` and in Vercel → Settings → Environment Variables, then redeploy. On the free tier Google may use the conversations to improve its products and applies daily limits; a paid key removes both.
+- Best-effort rate limits per IP: 20 messages / 10 min, 3 distributor requests / hour.
+
+### Ice cream on your table (AR)
+- Button under the 3D hero. Uses Google's `<model-viewer>` (vendored in `public/vendor`, loaded only when opened): Android Scene Viewer / WebXR, iPhone Quick Look. Computers get a QR code that opens it on the phone (`/ar?ar=<flavor>`).
+- Models: `public/models/charms-<flavor>.glb`, real size, built from the same procedural model as the hero (`src/components/three/charmsArModel.ts`). Re-export them if the bar's shape or flavours change.
+
+### Where to buy (map)
+- `/ar/stores`: MapLibre + free OpenFreeMap tiles, clustered points, nearest list, directions.
+- Points of sale live in the **Points of sale** collection. `npm run stores:import` adds new food shops from OpenStreetMap (West Bank + Gaza); edited or hidden points are never touched.
+
 ## Before production
 
 1. **Migrations instead of auto-push.** In development Payload pushes schema changes

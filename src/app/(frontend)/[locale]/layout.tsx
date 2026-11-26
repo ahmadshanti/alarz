@@ -6,6 +6,7 @@ import { getDictionary } from "@/i18n/dictionaries";
 import SmoothScroll from "@/components/providers/SmoothScroll";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import AssistantLauncher from "@/components/assistant/AssistantLauncher";
 import { getSiteSettings } from "@/lib/cms";
 
 export function generateStaticParams() {
@@ -48,6 +49,7 @@ export default async function LocaleLayout({
           <Header locale={locale} t={t.nav} />
           {children}
           <Footer locale={locale} t={t.footer} nav={t.nav} settings={settings} />
+          <AssistantLauncher locale={locale} t={t.assistant} />
         </SmoothScroll>
       </body>
     </html>

@@ -3,6 +3,8 @@ import { withPayload } from "@payloadcms/next/withPayload";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // lets a verification build run next to `npm run dev` (which holds .next): NEXT_DIST_DIR=node_modules/.cache/next-verify
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   images: {
     formats: ["image/avif", "image/webp"],
     // images uploaded through the CMS are served by Payload at /api/media/file/<name>

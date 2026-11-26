@@ -1,0 +1,120 @@
+/* Floating "Ask Al-Arz" button (on every page — kept small). */
+
+.as-launch {
+  position: fixed;
+  z-index: 70;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+:root[dir="rtl"] .as-launch,
+[dir="rtl"] .as-launch {
+  left: calc(1.25rem + env(safe-area-inset-left, 0px));
+  flex-direction: row-reverse;
+}
+[dir="ltr"] .as-launch {
+  right: calc(1.25rem + env(safe-area-inset-right, 0px));
+}
+
+.as-fab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  height: 3.6rem;
+  min-width: 3.6rem;
+  border-radius: 999px;
+  padding-inline: 0.95rem 1.25rem;
+  background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-deep) 100%);
+  color: var(--color-orange);
+  font-weight: 900;
+  box-shadow:
+    0 18px 40px -14px rgb(8 29 60 / 0.75),
+    inset 0 1px 0 rgb(255 255 255 / 0.15);
+  transition:
+    transform 0.35s var(--ease-bounce),
+    padding 0.3s;
+}
+.as-fab:hover {
+  transform: translateY(-3px) scale(1.03);
+}
+.as-fab:focus-visible {
+  outline: 3px solid var(--color-orange);
+  outline-offset: 3px;
+}
+.as-fab__label {
+  color: white;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+.as-launch.is-open .as-fab {
+  padding-inline: 0;
+  justify-content: center;
+  width: 3.6rem;
+  color: white;
+}
+.as-launch.is-open .as-fab__label {
+  display: none;
+}
+.as-fab__ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 2px solid var(--color-orange);
+  opacity: 0;
+  animation: as-ring 3.2s ease-out 2s infinite;
+  pointer-events: none;
+}
+@keyframes as-ring {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  60%,
+  100% {
+    opacity: 0;
+    transform: scale(1.18);
+  }
+}
+
+.as-nudge {
+  max-width: 15rem;
+  border-radius: 1.1rem;
+  background: white;
+  padding: 0.6rem 0.9rem;
+  text-align: start;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--color-navy-ink);
+  box-shadow: 0 16px 36px -16px rgb(8 29 60 / 0.55);
+  animation: as-nudge-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes as-nudge-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+}
+
+@media (max-width: 640px) {
+  .as-fab__label {
+    display: none;
+  }
+  .as-fab {
+    padding-inline: 0;
+    justify-content: center;
+    width: 3.6rem;
+  }
+  .as-launch.is-open {
+    display: none; /* the panel is full-screen on phones and has its own close button */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .as-fab__ring,
+  .as-nudge {
+    animation: none;
+  }
+}

@@ -41,7 +41,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <main>
-      <Hero locale={locale} t={t.hero} flavors={charms} />
+      <Hero locale={locale} t={t.hero} ar={t.ar} flavors={charms} />
       <FlavorMarquee locale={locale} items={t.marquee} />
       <CharmsSpotlight locale={locale} t={t.charms} flavors={charms} />
       <StoryTeaser locale={locale} t={t.story} cta={t.teasers.storyCta} milestones={milestones} settings={settings} />

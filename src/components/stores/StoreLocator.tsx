@@ -41,6 +41,19 @@ export default function StoreLocator({ locale, t }: { locale: Locale; t: Diction
   const [status, setStatus] = useState<"idle" | "locating" | "denied">("idle");
   const listRef = useRef<HTMLOListElement>(null);
 
+  // deep link from the assistant: /stores?lat=..&lng=..&store=<id>
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const lat = Number(q.get("lat")),
+      lng = Number(q.get("lng"));
+    if (q.get("lat") && q.get("lng") && Number.isFinite(lat) && Number.isFinite(lng) && lat > 29 && lat < 34 && lng > 33.5 && lng < 36.5) {
+      setOrigin({ lat, lng });
+      setOriginKind("picked");
+    }
+    const store = Number(q.get("store"));
+    if (q.get("store") && Number.isInteger(store)) setSelectedId(store);
+  }, []);
+
   useEffect(() => {
     let alive = true;
     fetch("/api/stores")

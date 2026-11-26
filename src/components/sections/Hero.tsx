@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -26,19 +26,34 @@ const CharmsBar3D = dynamic(() => import("@/components/three/CharmsBar3D"), {
   ),
 });
 
+// AR viewer (model-viewer + QR) is only downloaded when someone opens it
+const ArViewer = dynamic(() => import("@/components/ar/ArViewer"), { ssr: false });
+
 export default function Hero({
   locale,
   t,
+  ar,
   flavors,
 }: {
   locale: Locale;
   t: Dictionary["hero"];
+  ar: Dictionary["ar"];
   flavors: CharmsFlavor[];
 }) {
   const root = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
   const [touched, setTouched] = useState(false);
   const flavor = flavors[active];
+  const [arFlavor, setArFlavor] = useState<string | null>(null);
+
+  // opened from the QR code on a computer: /ar?ar=<flavor>
+  useEffect(() => {
+    const wanted = new URLSearchParams(window.location.search).get("ar");
+    if (!wanted) return;
+    const i = flavors.findIndex((f) => f.id === wanted);
+    if (i >= 0) setActive(i);
+    setArFlavor(i >= 0 ? wanted : flavors[0]?.id ?? null);
+  }, [flavors]);
 
   useGSAP(
     () => {
@@ -140,6 +155,7 @@ export default function Hero({
             <div className="hero-canvas absolute inset-0">
               <CharmsBar3D
                 flavor={flavor.id}
+                paused={arFlavor !== null}
                 onInteract={() => setTouched(true)}
                 fallback={
                   <Image src={posterImg} alt="Al-Arz Charms" sizes="36rem" className="mx-auto h-full w-auto rounded-[2rem] object-contain" />
@@ -187,9 +203,34 @@ export default function Hero({
                 </button>
               ))}
             </div>
+
+            <button type="button" onClick={() => setArFlavor(flavor.id)} className="ar-trigger hero-chips mt-5">
+              <span className="ar-trigger__icon" aria-hidden>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2 3 7v10l9 5 9-5V7z" />
+                  <path d="M3 7l9 5 9-5M12 12v10" />
+                </svg>
+              </span>
+              {ar.trigger}
+              <span className="ar-trigger__new">AR</span>
+            </button>
           </div>
         </div>
       </div>
+
+      {arFlavor && (
+        <ArViewer
+          locale={locale}
+          t={ar}
+          flavors={flavors}
+          initialFlavor={arFlavor}
+          onClose={() => {
+            setArFlavor(null);
+            // drop ?ar= so a refresh doesn't reopen it
+            if (window.location.search.includes("ar=")) window.history.replaceState(null, "", window.location.pathname);
+          }}
+        />
+      )}
     </section>
   );
 }
