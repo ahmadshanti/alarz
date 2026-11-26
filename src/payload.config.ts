@@ -35,6 +35,8 @@ export default buildConfig({
       icons: [{ rel: "icon", type: "image/svg+xml", url: "/favicon.svg" }],
     },
     components: {
+      // company dashboard: today's numbers at the top of /admin
+      beforeDashboard: ["/payload/components/Insights#Insights"],
       graphics: {
         Logo: "/payload/components/graphics#Logo",
         Icon: "/payload/components/graphics#Icon",

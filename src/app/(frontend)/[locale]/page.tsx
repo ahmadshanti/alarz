@@ -18,6 +18,7 @@ import StoryTeaser from "@/components/teasers/StoryTeaser";
 import ProductsTeaser from "@/components/teasers/ProductsTeaser";
 import QualityTeaser from "@/components/teasers/QualityTeaser";
 import ContactCta from "@/components/teasers/ContactCta";
+import QuizTeaser from "@/components/teasers/QuizTeaser";
 
 // Content comes from the CMS; pages are also re-rendered on every CMS change (see src/payload/hooks/revalidate.ts).
 export const revalidate = 3600;
@@ -46,6 +47,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <CharmsSpotlight locale={locale} t={t.charms} flavors={charms} />
       <StoryTeaser locale={locale} t={t.story} cta={t.teasers.storyCta} milestones={milestones} settings={settings} />
       <ProductsTeaser locale={locale} t={t.products} teasers={t.teasers} products={rail} total={allProducts.length} />
+      <QuizTeaser locale={locale} t={t.quiz} />
       <QualityTeaser locale={locale} t={t.quality} cta={t.teasers.qualityCta} items={quality} />
       <News locale={locale} t={t.news} items={news} more={{ href: pageHref(locale, "news"), label: t.teasers.newsCta }} />
       <ContactCta locale={locale} t={t.teasers} settings={settings} />

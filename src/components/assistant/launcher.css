@@ -78,7 +78,12 @@
   }
 }
 
+/* floats above the button, so its appearance never moves anything (no layout shift) */
 .as-nudge {
+  position: absolute;
+  bottom: calc(100% + 0.6rem);
+  inset-inline-start: 0;
+  width: max-content;
   max-width: 15rem;
   border-radius: 1.1rem;
   background: white;

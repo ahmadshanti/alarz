@@ -40,6 +40,30 @@ export default function StoreLocator({ locale, t }: { locale: Locale; t: Diction
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [status, setStatus] = useState<"idle" | "locating" | "denied">("idle");
   const listRef = useRef<HTMLOListElement>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
+  // MapLibre is heavy: start it only when the map is about to be seen, once the page is idle
+  const [mapOn, setMapOn] = useState(false);
+  useEffect(() => {
+    const el = shellRef.current;
+    if (!el) return;
+    let idle: number | undefined;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        const start = () => setMapOn(true);
+        // Safari has no requestIdleCallback
+        const w = window as Window & { requestIdleCallback?: Window["requestIdleCallback"] };
+        idle = w.requestIdleCallback ? w.requestIdleCallback(start, { timeout: 1200 }) : (setTimeout(start, 200) as unknown as number);
+      },
+      { rootMargin: "300px 0px" },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      if (idle !== undefined && "cancelIdleCallback" in window) window.cancelIdleCallback(idle);
+    };
+  }, []);
 
   // deep link from the assistant: /stores?lat=..&lng=..&store=<id>
   useEffect(() => {
@@ -131,18 +155,17 @@ export default function StoreLocator({ locale, t }: { locale: Locale; t: Diction
     <section className="relative pb-20">
       <div className="container-x">
         {/* headline stats */}
-        <div className="mb-6 flex flex-wrap items-center gap-3">
+        {/* one line, never wraps: values arriving later must not push the map down */}
+        <div className="no-scrollbar mb-6 flex min-h-[2.5rem] flex-nowrap items-center gap-2 overflow-x-auto sm:gap-3">
           <span className="sl-stat">
             <b>{points ? formatNumber(counts.all, locale) : "…"}</b> {t.points} {t.onMap}
           </span>
-          {nearest[0] && (
-            <span className="sl-stat sl-stat--orange">
-              {t.nearest}: <b>{nearest[0].distanceText}</b>
-            </span>
-          )}
+          <span className="sl-stat sl-stat--orange">
+            {t.nearest}: <b>{nearest[0]?.distanceText ?? "…"}</b>
+          </span>
         </div>
 
-        <div className="sl-shell grid overflow-hidden rounded-[2.25rem] bg-white shadow-[0_40px_90px_-40px_rgba(13,47,94,0.45)] ring-1 ring-navy/5 [grid-template-areas:'head'_'map'_'list'] lg:h-[48rem] lg:grid-cols-[25rem_1fr] lg:grid-rows-[auto_1fr] lg:[grid-template-areas:'head_map'_'list_map']">
+        <div ref={shellRef} className="sl-shell grid overflow-hidden rounded-[2.25rem] bg-white shadow-[0_40px_90px_-40px_rgba(13,47,94,0.45)] ring-1 ring-navy/5 [grid-template-areas:'head'_'map'_'list'] lg:h-[48rem] lg:grid-cols-[25rem_1fr] lg:grid-rows-[auto_1fr] lg:[grid-template-areas:'head_map'_'list_map']">
           {/* ---------- controls ---------- */}
           <div className="relative z-10 border-navy/5 p-5 sm:p-6 lg:border-e [grid-area:head]">
             <h2 className="text-2xl font-black text-navy">{t.whereAreYou}</h2>
@@ -199,6 +222,7 @@ export default function StoreLocator({ locale, t }: { locale: Locale; t: Diction
 
           {/* ---------- map ---------- */}
           <div className="relative h-[62svh] min-h-[24rem] lg:h-auto [grid-area:map]" data-lenis-prevent>
+            {mapOn ? (
             <StoreMap
               locale={locale}
               points={visible}
@@ -219,6 +243,9 @@ export default function StoreLocator({ locale, t }: { locale: Locale; t: Diction
               onPick={pick}
               onSelect={setSelectedId}
             />
+            ) : (
+              <div className="sl-skeleton absolute inset-0" />
+            )}
 
             {pickMode && (
               <div className="sl-hint pointer-events-none absolute inset-x-0 top-4 z-10 flex justify-center">
@@ -245,7 +272,7 @@ export default function StoreLocator({ locale, t }: { locale: Locale; t: Diction
             <div className="px-5 pt-4 pb-2 sm:px-6">
               <h3 className="font-black text-navy">{heading}</h3>
             </div>
-            <ol ref={listRef} className="sl-list max-h-[26rem] overflow-y-auto px-3 pb-4 sm:px-4 lg:absolute lg:inset-x-0 lg:top-14 lg:bottom-0 lg:max-h-none" data-lenis-prevent>
+            <ol ref={listRef} className="sl-list h-[26rem] overflow-y-auto px-3 pb-4 sm:px-4 lg:absolute lg:inset-x-0 lg:top-14 lg:bottom-0 lg:max-h-none" data-lenis-prevent>
               {points === null && <li className="p-4 text-sm font-semibold text-navy/50">{t.loading}</li>}
               {points?.length === 0 && <li className="p-4 text-sm font-semibold text-navy/50">{t.noData}</li>}
               {points && points.length > 0 && nearest.length === 0 && (

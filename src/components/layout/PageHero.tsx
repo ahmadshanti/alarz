@@ -24,10 +24,10 @@ export default function PageHero({
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#fff_0%,_var(--color-cream)_60%,_var(--color-cream-deep)_100%)]" />
         <div className="absolute -top-24 size-[34rem] rounded-full bg-[radial-gradient(circle,_rgb(254_178_88/0.4)_0%,_rgb(254_178_88/0)_65%)] ltr:-right-24 rtl:-left-24" />
         <div className="absolute -bottom-40 size-[28rem] rounded-full bg-[radial-gradient(circle,_rgb(25_78_145/0.12)_0%,_rgb(25_78_145/0)_65%)] ltr:-left-24 rtl:-right-24" />
-        <SwirlMark
-          mono
-          className="page-hero-swirl absolute top-16 h-[26rem] text-navy opacity-[0.06] ltr:right-[4%] rtl:left-[4%]"
-        />
+        {/* decorative; skipped on phones, where it sits behind the text and only delays paint */}
+        <div className="absolute top-16 hidden h-[26rem] sm:block ltr:right-[4%] rtl:left-[4%]">
+          <SwirlMark mono className="page-hero-swirl h-full text-navy opacity-[0.06]" />
+        </div>
       </div>
 
       <div className="container-x">

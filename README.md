@@ -120,6 +120,29 @@ public/
 - `/ar/stores`: MapLibre + free OpenFreeMap tiles, clustered points, nearest list, directions.
 - Points of sale live in the **Points of sale** collection. `npm run stores:import` adds new food shops from OpenStreetMap (West Bank + Gaza); edited or hidden points are never touched.
 
+### Try it with the camera (no AR needed)
+- In the AR window, "جرّبها بالكاميرا" opens the live camera (any phone or laptop) with the real-size bar on top:
+  one finger moves it, two fingers zoom and rotate, the shutter saves/shares a photo (`src/components/ar/CameraTry.tsx`).
+  True AR ("حطّها على طاولتك") is offered as well on devices that support it.
+
+### What's your flavour? (quiz)
+- `/ar/quiz`: 4 questions → a matching catalogue product and a 1080×1920 story image drawn in the browser
+  (`src/components/quiz`). Linked from the home page and the footer.
+
+### Company dashboard
+- The top of /admin shows new messages, distributor requests (30 days), products, points of sale by type and a
+  14-day messages chart (`src/payload/components/Insights.tsx`, days counted on Palestine time).
+
+### Install as an app (PWA)
+- `src/app/manifest.ts` + `public/icons`: "Add to Home screen" gives a branded icon, splash and shortcuts
+  (stores, products, quiz).
+
+### Performance notes
+- Cairo is self-hosted through next/font (`src/app/(frontend)/fonts.ts`): preloaded, metric-matched fallback, no layout shift.
+- The logo mark is one cached file (`public/swirl-mark.svg`) used as a CSS mask — the home page HTML went from 1.4 MB to ~160 KB.
+- The 3D hero loads when the page is idle; low-memory devices, data-saver and reduced-motion get the product photo.
+- The map starts only when it is about to be seen; stats and list have fixed sizes (no layout shift).
+
 ## Before production
 
 1. **Migrations instead of auto-push.** In development Payload pushes schema changes

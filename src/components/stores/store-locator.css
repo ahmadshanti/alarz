@@ -13,6 +13,8 @@
 }
 
 .sl-stat {
+  flex-shrink: 0;
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;

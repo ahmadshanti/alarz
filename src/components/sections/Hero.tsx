@@ -46,6 +46,29 @@ export default function Hero({
   const flavor = flavors[active];
   const [arFlavor, setArFlavor] = useState<string | null>(null);
 
+  /**
+   * The 3D bar is the heaviest thing on the site, so it waits until the page is idle, and
+   * low-end devices / data-saver / reduced-motion get the still product photo instead.
+   */
+  const [stageMode, setStageMode] = useState<"pending" | "3d" | "photo">("pending");
+  useEffect(() => {
+    const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
+    const weak =
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      nav.connection?.saveData === true ||
+      (nav.deviceMemory !== undefined && nav.deviceMemory <= 2) ||
+      (nav.hardwareConcurrency !== undefined && nav.hardwareConcurrency <= 2);
+    if (weak) return setStageMode("photo");
+    const w = window as Window & { requestIdleCallback?: Window["requestIdleCallback"]; cancelIdleCallback?: Window["cancelIdleCallback"] };
+    const go = () => setStageMode("3d");
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(go, { timeout: 1500 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const id = setTimeout(go, 300);
+    return () => clearTimeout(id);
+  }, []);
+
   // opened from the QR code on a computer: /ar?ar=<flavor>
   useEffect(() => {
     const wanted = new URLSearchParams(window.location.search).get("ar");
@@ -139,7 +162,7 @@ export default function Hero({
         </div>
 
         {/* Interactive 3D bar */}
-        <div className="hero-stage-wrap relative">
+        <div className="hero-stage-wrap relative min-w-0">
           <div className="hero-stage relative mx-auto aspect-square w-full max-w-[36rem]">
             {/* flavour-coloured glow (background-color transitions; no blur filter) */}
             <div
@@ -153,6 +176,15 @@ export default function Hero({
             <div className="pointer-events-none absolute inset-[4%] rounded-full border-2 border-dashed border-navy/10" />
 
             <div className="hero-canvas absolute inset-0">
+              {stageMode === "photo" ? (
+                <div className="grid h-full place-items-center p-[12%]">
+                  <Image src={posterImg} alt="Al-Arz Charms" sizes="(min-width: 1024px) 28rem, 70vw" priority className="h-full w-auto rounded-[2rem] object-contain shadow-[0_30px_60px_-30px_rgba(59,30,16,0.6)]" />
+                </div>
+              ) : stageMode === "pending" ? (
+                <div className="grid h-full place-items-center">
+                  <div className="h-[62%] w-[30%] -rotate-[18deg] animate-pulse rounded-[40%] bg-[#5b2f18]/15" />
+                </div>
+              ) : (
               <CharmsBar3D
                 flavor={flavor.id}
                 paused={arFlavor !== null}
@@ -161,13 +193,14 @@ export default function Hero({
                   <Image src={posterImg} alt="Al-Arz Charms" sizes="36rem" className="mx-auto h-full w-auto rounded-[2rem] object-contain" />
                 }
               />
+              )}
             </div>
 
             {/* drag hint */}
             <div
               className={clsx(
                 "pointer-events-none absolute top-[4%] left-[2%] flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-extrabold text-navy shadow-lg shadow-navy/10 transition-opacity duration-500",
-                touched ? "opacity-0" : "opacity-100",
+                touched || stageMode !== "3d" ? "opacity-0" : "opacity-100",
               )}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="hero-hand">
@@ -175,12 +208,29 @@ export default function Hero({
               </svg>
               {t.dragHint}
             </div>
+
+            {/* AR / camera — sits on the 3D stage, right under the bar */}
+            <button type="button" onClick={() => setArFlavor(flavor.id)} className="ar-launch">
+              <span className="ar-launch__icon" aria-hidden>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2 3 7v10l9 5 9-5V7z" />
+                  <path d="M3 7l9 5 9-5M12 12v10" />
+                </svg>
+              </span>
+              <span className="ar-launch__text">{ar.trigger}</span>
+              <span className="ar-launch__tag">AR</span>
+            </button>
           </div>
 
           {/* Flavour picker */}
           <div className="relative z-20 text-center">
             <p className="text-sm font-bold text-navy/60">{t.pickFlavor}</p>
-            <div className="hero-chips mt-3 flex flex-wrap justify-center gap-2" role="radiogroup" aria-label={t.pickFlavor}>
+            {/* one swipeable row on phones, wrapped and centred from sm up */}
+            <div
+              className="hero-chips no-scrollbar -mx-5 mt-3 flex gap-2 overflow-x-auto px-5 py-1.5 sm:mx-0 sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0"
+              role="radiogroup"
+              aria-label={t.pickFlavor}
+            >
               {flavors.map((f, i) => (
                 <button
                   key={f.id}
@@ -189,7 +239,7 @@ export default function Hero({
                   aria-checked={i === active}
                   onClick={() => setActive(i)}
                   className={clsx(
-                    "flex items-center gap-2 rounded-full py-1.5 ps-1.5 pe-4 text-sm font-bold transition-[transform,background-color,color,box-shadow] duration-300",
+                    "flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full py-1.5 ps-1.5 pe-4 text-sm font-bold transition-[transform,background-color,color,box-shadow] duration-300",
                     i === active
                       ? "scale-105 bg-navy text-white shadow-lg shadow-navy/30"
                       : "bg-white text-navy shadow-sm hover:-translate-y-0.5 hover:shadow-md",
@@ -204,16 +254,6 @@ export default function Hero({
               ))}
             </div>
 
-            <button type="button" onClick={() => setArFlavor(flavor.id)} className="ar-trigger hero-chips mt-5">
-              <span className="ar-trigger__icon" aria-hidden>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2 3 7v10l9 5 9-5V7z" />
-                  <path d="M3 7l9 5 9-5M12 12v10" />
-                </svg>
-              </span>
-              {ar.trigger}
-              <span className="ar-trigger__new">AR</span>
-            </button>
           </div>
         </div>
       </div>

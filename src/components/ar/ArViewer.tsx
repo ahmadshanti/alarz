@@ -11,6 +11,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
 import QRCode from "qrcode";
+import CameraTry from "./CameraTry";
 import type { CharmsFlavor, Locale } from "@/content/types";
 import type { Dictionary } from "@/i18n/dictionaries";
 import "./ar.css";
@@ -72,6 +73,9 @@ export default function ArViewer({
   const [canAR, setCanAR] = useState<boolean | null>(null);
   const [qr, setQr] = useState("");
   const [failed, setFailed] = useState(false);
+  const [camera, setCamera] = useState(false);
+  const [hasCamera, setHasCamera] = useState(false);
+  useEffect(() => setHasCamera(Boolean(navigator.mediaDevices?.getUserMedia)), []);
   const viewer = useRef<ModelViewerElement | null>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
   const touch = isTouchDevice();
@@ -96,7 +100,7 @@ export default function ArViewer({
 
   // modal behaviour: Esc closes, focus starts on close, page doesn't scroll behind
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && !document.querySelector(".arc") && onClose();
     window.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -225,36 +229,60 @@ export default function ArViewer({
             ))}
           </div>
 
-          {touch ? (
-            <div className="mt-auto grid gap-3">
-              <button type="button" onClick={startAR} disabled={canAR === false || progress < 1} className="ar-cta">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
-                  <path d="M12 7l5 3v4l-5 3-5-3v-4z" />
-                </svg>
-                {t.start}
+          <div className="mt-auto grid gap-3">
+            {/* works on (almost) every phone and laptop: live camera + movable ice cream */}
+            {hasCamera && (
+              <button type="button" onClick={() => setCamera(true)} disabled={!ready} className="ar-option ar-option--primary ar-camera-btn">
+                <span className="ar-option__icon" aria-hidden>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 7h-3l-2-3H9L7 7H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1z" />
+                    <circle cx="12" cy="13" r="3.5" />
+                  </svg>
+                </span>
+                <span className="min-w-0">
+                  <span className="ar-option__title">{t.cameraTry}</span>
+                  <span className="ar-option__sub">{t.cameraSub}</span>
+                </span>
               </button>
-              {canAR === false ? (
-                <p className="text-center text-sm font-semibold text-navy-ink/55">{t.unsupported}</p>
-              ) : (
-                <ol className="ar-steps">
-                  <li>{t.step1}</li>
-                  <li>{t.step2}</li>
-                  <li>{t.step3}</li>
-                </ol>
-              )}
-            </div>
-          ) : (
-            <div className="mt-auto flex items-center gap-5 rounded-3xl bg-white p-4 shadow-[0_20px_50px_-30px_rgba(13,47,94,0.5)]">
-              <div className="ar-qr size-32 shrink-0 overflow-hidden rounded-2xl" aria-hidden dangerouslySetInnerHTML={{ __html: qr }} />
-              <div>
-                <p className="font-black text-navy">{t.scanTitle}</p>
-                <p className="mt-1 text-sm text-navy-ink/60">{t.scanBody}</p>
+            )}
+            {/* real AR (plane detection) on phones that support it */}
+            {touch && canAR && (
+              <button type="button" onClick={startAR} disabled={progress < 1} className="ar-option ar-option--secondary">
+                <span className="ar-option__icon" aria-hidden>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
+                    <path d="M12 7l5 3v4l-5 3-5-3v-4z" />
+                  </svg>
+                </span>
+                <span className="min-w-0">
+                  <span className="ar-option__title">{t.start}</span>
+                  <span className="ar-option__sub">{t.realArSub}</span>
+                </span>
+              </button>
+            )}
+            {!touch && qr && (
+              <div className="flex items-center gap-4 rounded-3xl bg-white p-3.5 shadow-[0_20px_50px_-30px_rgba(13,47,94,0.5)]">
+                <div className="ar-qr size-24 shrink-0 overflow-hidden rounded-xl" aria-hidden dangerouslySetInnerHTML={{ __html: qr }} />
+                <div>
+                  <p className="font-black text-navy">{t.scanTitle}</p>
+                  <p className="mt-1 text-sm text-navy-ink/60">{t.scanBody}</p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
+      {camera && (
+        <CameraTry
+          locale={locale}
+          t={t}
+          flavors={flavors}
+          flavor={flavor}
+          onFlavor={setFlavor}
+          modelUrl={modelUrl}
+          onClose={() => setCamera(false)}
+        />
+      )}
     </div>,
     document.body,
   );

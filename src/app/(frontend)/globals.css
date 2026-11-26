@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "@fontsource-variable/cairo";
 
 /* ---------- Brand tokens (from the Al-Arz logo) ---------- */
 @theme {
@@ -12,7 +11,8 @@
   --color-cream: #fff8ee;
   --color-cream-deep: #fdebd3;
 
-  --font-sans: "Cairo Variable", "Cairo", system-ui, sans-serif;
+  /* real stack comes from next/font (src/app/(frontend)/fonts.ts), set on <html> */
+  --font-sans: var(--font-cairo, system-ui, sans-serif);
 
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -204,6 +204,80 @@
     transform: rotate(-12deg) scale(0.85);
   }
 }
+/* Hero "see it on your table" button (always loaded — the AR modal CSS is lazy) */
+.ar-launch {
+  position: absolute;
+  z-index: 15;
+  bottom: 2%;
+  left: 50%;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  white-space: nowrap;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--color-navy-ink), var(--color-navy));
+  padding: 0.45rem 0.55rem 0.45rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 900;
+  color: white;
+  box-shadow:
+    0 16px 34px -14px rgb(8 29 60 / 0.85),
+    inset 0 1px 0 rgb(255 255 255 / 0.12);
+  transition: transform 0.35s var(--ease-bounce);
+}
+[dir="rtl"] .ar-launch {
+  padding: 0.45rem 1rem 0.45rem 0.55rem;
+}
+.ar-launch:hover {
+  transform: translateY(-3px) scale(1.03);
+}
+.ar-launch:focus-visible {
+  outline: 3px solid var(--color-orange);
+  outline-offset: 3px;
+}
+.ar-launch__icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: var(--color-orange);
+  color: var(--color-navy-ink);
+}
+.ar-launch__icon::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 2px solid var(--color-orange);
+  animation: ar-launch-ring 2.4s ease-out 1.5s infinite;
+}
+@keyframes ar-launch-ring {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}
+.ar-launch__tag {
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.14);
+  padding: 0.1rem 0.5rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+}
+@media (max-width: 380px) {
+  .ar-launch__tag {
+    display: none;
+  }
+}
+
 .no-scrollbar {
   scrollbar-width: none;
 }

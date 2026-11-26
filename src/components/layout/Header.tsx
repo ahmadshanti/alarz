@@ -8,14 +8,19 @@ import type { Locale } from "@/content/types";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { pageHref, switchLocaleHref } from "@/i18n/routes";
 
-const navKeys = ["story", "products", "stores", "quality", "news"] as const;
+const navKeys = ["story", "products", "stores", "quiz", "quality", "news"] as const;
 
 export default function Header({ locale, t }: { locale: Locale; t: Dictionary["nav"] }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname() ?? `/${locale}`;
-  const links = navKeys.map((key) => ({ key, href: pageHref(locale, key) }));
-  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const links = [
+    { key: "home" as const, href: pageHref(locale) },
+    ...navKeys.map((key) => ({ key, href: pageHref(locale, key) })),
+  ];
+  // "home" is active only on the home page itself, the others also on their sub-pages
+  const isActive = (href: string) =>
+    href === pageHref(locale) ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 
   // close the mobile menu after navigating
   useEffect(() => setOpen(false), [pathname]);
@@ -34,7 +39,8 @@ export default function Header({ locale, t }: { locale: Locale; t: Dictionary["n
   const other = locale === "ar" ? "en" : "ar";
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header className="fixed inset-x-0 top-0 z-[72]">
+      {/* z-[72]: above the assistant button (70) so the open phone menu covers it; below the chat panel (75) and AR (80) */}
       <div
         className={clsx(
           "container-x transition-all duration-500",
@@ -58,21 +64,21 @@ export default function Header({ locale, t }: { locale: Locale; t: Dictionary["n
             />
           </Link>
 
-          <ul className="hidden items-center gap-1 lg:flex">
+          <ul className="hidden items-center gap-0.5 xl:flex">
             {links.map((l) => (
               <li key={l.key}>
                 <Link
                   href={l.href}
                   aria-current={isActive(l.href) ? "page" : undefined}
                   className={clsx(
-                    "group relative rounded-full px-4 py-2 font-bold transition-colors hover:text-navy",
+                    "group relative whitespace-nowrap rounded-full px-3.5 py-2 font-bold transition-colors hover:text-navy",
                     isActive(l.href) ? "text-navy" : "text-navy-ink/80",
                   )}
                 >
                   {t[l.key]}
                   <span
                     className={clsx(
-                      "absolute inset-x-4 -bottom-0.5 h-1 origin-center rounded-full bg-orange transition-transform duration-300 group-hover:scale-x-100",
+                      "absolute inset-x-3.5 -bottom-0.5 h-1 origin-center rounded-full bg-orange transition-transform duration-300 group-hover:scale-x-100",
                       isActive(l.href) ? "scale-x-100" : "scale-x-0",
                     )}
                   />
@@ -96,7 +102,7 @@ export default function Header({ locale, t }: { locale: Locale; t: Dictionary["n
               type="button"
               onClick={() => setOpen(true)}
               aria-label={t.menu}
-              className="grid size-11 place-items-center rounded-full bg-navy text-white lg:hidden"
+              className="grid size-11 place-items-center rounded-full bg-navy text-white xl:hidden"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <path d="M4 7h16M4 12h10M4 17h16" />
@@ -109,7 +115,7 @@ export default function Header({ locale, t }: { locale: Locale; t: Dictionary["n
       {/* Mobile menu */}
       <div
         className={clsx(
-          "fixed inset-0 z-50 flex flex-col bg-navy text-white transition-[clip-path] duration-700 ease-[cubic-bezier(.77,0,.18,1)] lg:hidden",
+          "fixed inset-0 z-50 flex flex-col bg-navy text-white transition-[clip-path] duration-700 ease-[cubic-bezier(.77,0,.18,1)] xl:hidden",
           open ? "[clip-path:circle(150%_at_90%_5%)]" : "pointer-events-none [clip-path:circle(0%_at_90%_5%)]",
         )}
         aria-hidden={!open}
@@ -128,7 +134,7 @@ export default function Header({ locale, t }: { locale: Locale; t: Dictionary["n
           </button>
         </div>
         <ul className="container-x mt-14 flex flex-col gap-2">
-          {[{ href: pageHref(locale), key: "home" as const }, ...links, { href: pageHref(locale, "contact"), key: "contact" as const }].map((l, i) => (
+          {[...links, { href: pageHref(locale, "contact"), key: "contact" as const }].map((l, i) => (
             <li
               key={l.key}
               style={{ transitionDelay: open ? `${150 + i * 70}ms` : "0ms" }}

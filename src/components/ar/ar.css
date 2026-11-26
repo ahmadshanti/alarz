@@ -104,38 +104,266 @@
   height: 100%;
 }
 
-/* hero trigger */
-.ar-trigger {
-  display: inline-flex;
+/* modal action buttons */
+.ar-option {
+  display: flex;
+  width: 100%;
   align-items: center;
-  gap: 0.5rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--color-navy-ink), var(--color-navy));
-  padding: 0.6rem 1.1rem 0.6rem 0.9rem;
-  font-size: 0.9rem;
-  font-weight: 800;
+  gap: 0.85rem;
+  border-radius: 1.25rem;
+  padding: 0.85rem 1rem;
+  text-align: start;
+  transition:
+    transform 0.3s var(--ease-bounce),
+    box-shadow 0.2s;
+}
+.ar-option:hover {
+  transform: translateY(-2px);
+}
+.ar-option:focus-visible {
+  outline: 3px solid var(--color-orange);
+  outline-offset: 3px;
+}
+.ar-option--primary {
+  background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-deep) 100%);
   color: white;
-  box-shadow: 0 14px 30px -14px rgb(8 29 60 / 0.8);
-  transition: transform 0.3s var(--ease-bounce);
+  box-shadow: 0 18px 36px -16px rgb(25 78 145 / 0.8);
 }
-.ar-trigger:hover {
-  transform: translateY(-2px) scale(1.03);
+.ar-option--secondary {
+  background: white;
+  color: var(--color-navy);
+  box-shadow: inset 0 0 0 2px rgb(25 78 145 / 0.12);
 }
-.ar-trigger__icon {
+.ar-option__icon {
   display: grid;
   place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 999px;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex-shrink: 0;
+  border-radius: 0.9rem;
   background: var(--color-orange);
   color: var(--color-navy-ink);
 }
-.ar-trigger__new {
+.ar-option--secondary .ar-option__icon {
+  background: var(--color-cream);
+  color: var(--color-navy);
+}
+.ar-option__title {
+  display: block;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.3;
+}
+.ar-option__sub {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+/* ---------- camera mode ---------- */
+.arc {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  overflow: hidden;
+  background: #000;
+  color: white;
+  animation: ar-fade 0.3s ease both;
+}
+.arc-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.arc-video.is-mirrored {
+  transform: scaleX(-1);
+}
+.arc-stage {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  cursor: grab;
+}
+.arc-stage:active {
+  cursor: grabbing;
+}
+.arc-model {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  width: min(78vw, 30rem);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+.arc-top {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: calc(0.9rem + env(safe-area-inset-top, 0px)) max(1rem, env(safe-area-inset-right, 0px)) 2.5rem max(1rem, env(safe-area-inset-left, 0px));
+  background: linear-gradient(rgb(0 0 0 / 0.55), transparent);
+  pointer-events: none;
+}
+.arc-top > * {
+  pointer-events: auto;
+}
+.arc-title {
+  font-size: 1rem;
+  font-weight: 900;
+  text-shadow: 0 2px 10px rgb(0 0 0 / 0.5);
+}
+.arc-round {
+  display: grid;
+  place-items: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  flex-shrink: 0;
   border-radius: 999px;
+  background: rgb(255 255 255 / 0.18);
+  color: white;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background-color 0.2s;
+}
+.arc-round:hover {
+  background: rgb(255 255 255 / 0.3);
+}
+.arc-hint {
+  position: absolute;
+  left: 50%;
+  top: calc(5.5rem + env(safe-area-inset-top, 0px));
+  transform: translateX(-50%);
+  max-width: calc(100% - 2rem);
+  border-radius: 999px;
+  background: rgb(8 29 60 / 0.75);
+  padding: 0.55rem 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  pointer-events: none;
+  animation: ar-fade 0.4s ease both;
+}
+.arc-msg {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  width: min(22rem, calc(100% - 2rem));
+  border-radius: 1.25rem;
+  background: rgb(8 29 60 / 0.85);
+  padding: 1rem 1.1rem;
+  text-align: center;
+  font-weight: 700;
+  line-height: 1.6;
+}
+.arc-msg--error {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: center;
+}
+.arc-bottom {
+  position: absolute;
+  inset: auto 0 0;
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+  padding: 3rem 1rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(transparent, rgb(0 0 0 / 0.6));
+  pointer-events: none;
+}
+.arc-bottom > * {
+  pointer-events: auto;
+}
+.arc-flavors {
+  display: flex;
+  gap: 0.6rem;
+}
+.arc-flavor {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.6);
+  transition: transform 0.25s var(--ease-bounce), box-shadow 0.2s;
+}
+.arc-flavor.is-on {
+  transform: scale(1.18);
+  box-shadow:
+    0 0 0 3px white,
+    0 0 0 6px rgb(254 178 88 / 0.9);
+}
+.arc-actions {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.arc-shutter {
+  display: grid;
+  place-items: center;
+  width: 4.6rem;
+  height: 4.6rem;
+  border-radius: 999px;
+  border: 4px solid white;
+  background: transparent;
+  transition: transform 0.15s;
+}
+.arc-shutter span {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 999px;
+  background: white;
+  transition: transform 0.15s, background-color 0.2s;
+}
+.arc-shutter:active span {
+  transform: scale(0.88);
+  background: var(--color-orange);
+}
+.arc-shutter:disabled {
+  opacity: 0.45;
+}
+.arc-photo {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  background: #000;
+  animation: ar-fade 0.25s ease both;
+}
+.arc-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  min-height: 0;
+}
+.arc-photo__bar {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 1rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+}
+.arc-pill {
+  border-radius: 999px;
+  background: var(--color-orange);
+  padding: 0.85rem 1.6rem;
+  font-weight: 900;
+  color: var(--color-navy-ink);
+}
+.arc-pill--ghost {
   background: rgb(255 255 255 / 0.15);
-  padding: 0.05rem 0.45rem;
-  font-size: 0.68rem;
-  letter-spacing: 0.04em;
+  color: white;
+}
+.arc-round:focus-visible,
+.arc-shutter:focus-visible,
+.arc-flavor:focus-visible,
+.arc-pill:focus-visible {
+  outline: 3px solid var(--color-orange);
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {

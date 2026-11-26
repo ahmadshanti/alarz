@@ -4,6 +4,7 @@ import "../globals.css";
 import { dirFor, isLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import SmoothScroll from "@/components/providers/SmoothScroll";
+import { cairoStack } from "../fonts";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AssistantLauncher from "@/components/assistant/AssistantLauncher";
@@ -20,7 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: { default: t.meta.title, template: `%s | ${locale === "ar" ? "بوظة الآرز" : "Al-Arz Ice Cream"}` },
     description: t.meta.description,
-    icons: { icon: "/favicon.svg" },
+    icons: { icon: "/favicon.svg", apple: "/icons/apple-touch-icon.png" },
+    appleWebApp: { capable: true, title: locale === "ar" ? "الآرز" : "Al-Arz", statusBarStyle: "default" },
     alternates: { languages: { ar: "/ar", en: "/en" } },
     openGraph: { title: t.meta.title, description: t.meta.description, locale },
   };
@@ -43,7 +45,11 @@ export default async function LocaleLayout({
   const settings = await getSiteSettings();
 
   return (
-    <html lang={locale} dir={dirFor(locale)}>
+    <html lang={locale} dir={dirFor(locale)} style={{ "--font-cairo": cairoStack } as React.CSSProperties}>
+      <head>
+        {/* the decorative logo mark is used as a CSS mask on most pages — fetch it early */}
+        <link rel="preload" href="/swirl-mark.svg" as="image" type="image/svg+xml" />
+      </head>
       <body className="font-sans">
         <SmoothScroll>
           <Header locale={locale} t={t.nav} />
